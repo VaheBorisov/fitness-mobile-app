@@ -1,18 +1,20 @@
 {
-  "scheme": "acme",
-  "userInterfaceStyle": "automatic",
-  "orientation": "default",
-  "web": {
-    "output": "static"
-  },
-  "plugins": [
-    [
-      "expo-router",
-      {
-        "origin": "https://n"
-      }
-    ]
-  ],
-  "name": "fitness-mobile-app",
-  "slug": "fitness-mobile-app"
+  "expo": {
+    "scheme": "acme",
+    "userInterfaceStyle": "automatic",
+    "orientation": "default",
+    "web": {
+      "output": "static"
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "origin": "https://n"
+        }
+      ]
+    ],
+    "name": "fit-app",
+    "slug": "fit-app"
+  }
 }
