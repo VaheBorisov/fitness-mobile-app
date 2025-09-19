@@ -1,16 +1,16 @@
-import {useAuth} from '@clerk/clerk-expo';
-import { Stack } from 'expo-router';
-import { View, ActivityIndicator } from 'react-native';
+import { useAuth } from "@clerk/clerk-expo";
+import { Stack } from "expo-router";
+import { View, ActivityIndicator } from "react-native";
 
 export default function Layout() {
-  const { isLoaded, isSignedIn, userId, sessionId, getToken } = useAuth();
+  const { isLoaded, isSignedIn, sessionId, getToken } = useAuth();
 
   if (!isLoaded)
     return (
       <View className="flex flex-1 items-center justify-center">
         <ActivityIndicator size="large" color="#0000ff" />
       </View>
-    )
+    );
 
   return (
     <Stack>

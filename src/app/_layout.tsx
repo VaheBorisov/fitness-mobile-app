@@ -1,12 +1,13 @@
 import { Slot } from "expo-router";
-import { ClerkProvider } from '@clerk/clerk-expo';
+import { ClerkProvider } from "@clerk/clerk-expo";
+import { tokenCache } from "@clerk/clerk-expo/token-cache";
 
 import "../global.css";
 
 export default function Layout() {
   return (
-   <ClerkProvider>
-     <Slot />
-   </ClerkProvider>
+    <ClerkProvider tokenCache={tokenCache}>
+      <Slot />
+    </ClerkProvider>
   );
 }
