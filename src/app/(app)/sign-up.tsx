@@ -81,7 +81,7 @@ export default function SignUpScreen() {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView className="flex flex-1">
       <>
         <Text>Sign up</Text>
         <TextInput
