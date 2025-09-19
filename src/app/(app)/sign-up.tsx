@@ -3,6 +3,7 @@ import { useSignUp } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Text,
@@ -26,6 +27,11 @@ export default function SignUpScreen() {
   // Handle submission of sign-up form
   const onSignUpPress = async () => {
     if (!isLoaded) return;
+    if (!emailAddress || !password) {
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
+    setIsLoading(true);
 
     // Start sign-up process using email and password provided
     try {
@@ -44,12 +50,19 @@ export default function SignUpScreen() {
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
       console.error(JSON.stringify(err, null, 2));
+    } finally {
+      setIsLoading(false);
     }
   };
 
   // Handle submission of verification form
   const onVerifyPress = async () => {
     if (!isLoaded) return;
+    if (!code) {
+      Alert.alert("Error", "Please enter a verification code.");
+      return;
+    }
+    setIsLoading(true);
 
     try {
       // Use the code the user provided to attempt verification
@@ -71,6 +84,8 @@ export default function SignUpScreen() {
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
       console.error(JSON.stringify(err, null, 2));
+    } finally {
+      setIsLoading(false);
     }
   };
 

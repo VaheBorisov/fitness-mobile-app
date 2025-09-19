@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useSignIn } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Text,
@@ -9,9 +11,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import clsx from "clsx";
+
 import GoogleSignIn from "@/app/components/GoogleSignIn";
 
 export default function Page() {
@@ -25,6 +27,12 @@ export default function Page() {
   // Handle the submission of the sign-in form
   const onSignInPress = async () => {
     if (!isLoaded) return;
+
+    if (!emailAddress || !password) {
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
+    setIsLoading(true);
 
     // Start the sign-in process using the email and password provided
     try {
@@ -47,6 +55,8 @@ export default function Page() {
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
       console.error(JSON.stringify(err, null, 2));
+    } finally {
+      setIsLoading(false);
     }
   };
 
