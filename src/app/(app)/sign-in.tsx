@@ -110,6 +110,7 @@ export default function Page() {
                   <TextInput
                     autoCapitalize="none"
                     value={password}
+                    secureTextEntry
                     placeholder="Enter your password"
                     placeholderTextColor="#9CA3AF"
                     onChangeText={setPassword}
