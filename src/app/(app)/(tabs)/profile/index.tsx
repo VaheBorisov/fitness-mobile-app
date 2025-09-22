@@ -18,7 +18,7 @@ export default function Page() {
   };
 
   return (
-    <SafeAreaView className="flex flex-1">
+    <SafeAreaView className="flex-1">
       <Text>Profile</Text>
       {/* Sign Out */}
       <View className="px-6 mb-8">
