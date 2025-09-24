@@ -1,5 +1,4 @@
-import {defineType, defineField, defineArrayMember, validation} from 'sanity'
-import exercise from './exercise';
+import {defineType, defineField, defineArrayMember} from 'sanity'
 
 export default defineType({
   name: 'workout',
@@ -46,7 +45,7 @@ export default defineType({
               to: [{type: 'exercise'}],
               validation: (Rule) => Rule.required(),
             }),
-            defineField({ 
+            defineField({
               name: 'sets',
               type: 'array',
               title: 'Sets',
@@ -89,17 +88,17 @@ export default defineType({
                   ],
                   preview: {
                     select: {
-                        reps: 'reps',
-                        weight: 'weight',
-                        weightUnit: 'weightUnit',
+                      reps: 'reps',
+                      weight: 'weight',
+                      weightUnit: 'weightUnit',
                     },
-                    prepare({ reps, weight, weightUnit }) {
-                        return {
-                            title: `Set ${reps} reps`,
-                            subtitle: weight ? `${weight} ${weightUnit}` : 'Bodyweight'
-                        }
-                    }
-                  }
+                    prepare({reps, weight, weightUnit}) {
+                      return {
+                        title: `Set ${reps} reps`,
+                        subtitle: weight ? `${weight} ${weightUnit}` : 'Bodyweight',
+                      }
+                    },
+                  },
                 }),
               ],
               validation: (Rule) => Rule.required().min(1),
@@ -107,18 +106,18 @@ export default defineType({
           ],
           preview: {
             select: {
-                title: 'exercise.name',
-                sets: 'sets'
+              title: 'exercise.name',
+              sets: 'sets',
             },
-            prepare({ title, sets }) {
-                const setCount = sets ? sets.length : 0;
+            prepare({title, sets}) {
+              const setCount = sets ? sets.length : 0
 
-                return {
-                    title: title || 'Exercise',
-                    subtitle: `${setCount} set${setCount !== 1 ? 's' : ''}`
-                }
-            }
-          }
+              return {
+                title: title || 'Exercise',
+                subtitle: `${setCount} set${setCount !== 1 ? 's' : ''}`,
+              }
+            },
+          },
         }),
       ],
       validation: (Rule) => Rule.min(1),
@@ -128,17 +127,17 @@ export default defineType({
     select: {
       date: 'date',
       duration: 'duration',
-      exercises: 'exercises'
+      exercises: 'exercises',
     },
-    prepare({ date, duration, exercises }) {
-        const workoutDate = date ? new Date(date).toLocaleDateString() : 'No Date';
-        const durationMinutes = duration ? Math.round(duration / 60) : 0;
-        const exerciseCount = exercises ? exercises.length : 0;
+    prepare({date, duration, exercises}) {
+      const workoutDate = date ? new Date(date).toLocaleDateString() : 'No Date'
+      const durationMinutes = duration ? Math.round(duration / 60) : 0
+      const exerciseCount = exercises ? exercises.length : 0
 
-        return {
-            title: `Workout - ${workoutDate}`,
-            subtitle: `${durationMinutes} min * ${exerciseCount} exercise${exerciseCount !== 1 ? 's' : ''}`
-        }
-    }
+      return {
+        title: `Workout - ${workoutDate}`,
+        subtitle: `${durationMinutes} min * ${exerciseCount} exercise${exerciseCount !== 1 ? 's' : ''}`,
+      }
+    },
   },
-}) 
+})

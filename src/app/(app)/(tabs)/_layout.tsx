@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, Entypo } from "@expo/vector-icons";
 import { Image } from "react-native";
 
 export default function Layout() {
@@ -31,7 +31,7 @@ export default function Layout() {
           headerShown: false,
           title: "Workout",
           tabBarIcon: ({ color, size }) => (
-            <AntDesign name="pluscircle" color={color} size={size} />
+            <Entypo name="circle-with-plus" color={color} size={size} />
           ),
         }}
       />
@@ -52,7 +52,7 @@ export default function Layout() {
           headerShown: false,
           title: "History",
           tabBarIcon: ({ color, size }) => (
-            <AntDesign name="clockcircleo" color={color} size={size} />
+            <AntDesign name="clock-circle" color={color} size={size} />
           ),
         }}
       />
