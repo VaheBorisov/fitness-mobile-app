@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Markdown from "react-native-markdown-display";
 import {
   ActivityIndicator,
   Image,
@@ -13,6 +14,8 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
+import clsx from "clsx";
+
 import { defineQuery } from "groq";
 
 import {
@@ -22,8 +25,9 @@ import {
 
 import { client, urlFor } from "@/lib/sanity/client";
 
+import { markdownStyle } from "@/styles/exersice-detail-markdown-style";
+
 import type { Exercise } from "@/lib/sanity/types";
-import clsx from "clsx";
 
 const singleExerciseQuery = defineQuery(
   `*[_type == "exercise" && _id == $id][0]`,
@@ -61,7 +65,34 @@ export default function ExerciseDetail() {
     fetchExercise();
   }, [fetchExercise, id]);
 
-  const getAiGuidance = async () => {};
+  const getAiGuidance = async () => {
+    if (!exercise) return;
+
+    setAiLoading(true);
+    try {
+      const response = await fetch("/api/ai", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ exerciseName: exercise.name }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed fetching AI guidance");
+      }
+
+      const data = await response.json();
+      setAiGuidance(data.message);
+    } catch (e) {
+      console.error("Error fetching AI guidance:", e);
+      setAiGuidance(
+        "Sorry, there was an error getting AI guidance. Please try again.",
+      );
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   if (loading)
     return (
@@ -172,8 +203,30 @@ export default function ExerciseDetail() {
             </View>
           )}
 
-          {/* TODO: AI Guidance */}
-          {/* -------- */}
+          {/* AI Guidance */}
+          {(aiGuidance || aiLoading) && (
+            <View className="mb-6">
+              <View className="flex-row items-center mb-3">
+                <Ionicons name="fitness" size={24} color="#3B82F6" />
+                <Text className="text-xl font-semibold text-gray-800 ml-2">
+                  AI Coach says...
+                </Text>
+              </View>
+
+              {aiLoading ? (
+                <View className="bg-gray-50 rounded-xl p-4 items-center">
+                  <ActivityIndicator size="small" color="#3B82F6" />
+                  <Text className="text-gray-600 mt-2">
+                    Getting personalized guidance...
+                  </Text>
+                </View>
+              ) : (
+                <View className="bg-blue-50 rounded-xl p-4 border-l-4 border-blue-500">
+                  <Markdown style={markdownStyle}>{aiGuidance}</Markdown>
+                </View>
+              )}
+            </View>
+          )}
 
           {/* Action Buttons */}
           <View className="mt-8 gap-2">
