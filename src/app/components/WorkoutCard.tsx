@@ -4,10 +4,9 @@ import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { formatDate, formatDuration } from "@/helpers/date";
+import { formatDate, formatDuration } from "@/helpers/history-date";
 
 import type { GetWorkoutsQueryResult } from "@/lib/sanity/types";
-import exercise from "../../../sanity/schemaTypes/exercise";
 
 interface IWorkoutCardProps {
   workout: GetWorkoutsQueryResult[number];
@@ -32,6 +31,11 @@ export default function WorkoutCard({ workout }: IWorkoutCardProps) {
     [workout.exercises],
   );
 
+  const formatWorkoutDuration = (seconds?: number) => {
+    if (!seconds) return "Duration not recorded";
+    return formatDuration(seconds);
+  };
+
   return (
     <TouchableOpacity
       className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100"
@@ -52,7 +56,7 @@ export default function WorkoutCard({ workout }: IWorkoutCardProps) {
           <View className="flex-row items-center mt-1">
             <Ionicons name="time-outline" size={16} color="#6B7280" />
             <Text className="text-gray-600 ml-2">
-              {formatDuration(workout.duration)}
+              {formatWorkoutDuration(workout.duration)}
             </Text>
           </View>
         </View>
@@ -77,7 +81,7 @@ export default function WorkoutCard({ workout }: IWorkoutCardProps) {
         </View>
       </View>
 
-      {/* Workour List */}
+      {/* Workout List */}
       {workout.exercises && workout.exercises.length > 0 && (
         <View>
           <Text className="text-sm font-medium text-gray-700 mb-2">

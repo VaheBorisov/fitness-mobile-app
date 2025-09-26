@@ -10,6 +10,9 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+
+import WorkoutCard from "@/app/components/WorkoutCard";
 
 import { defineQuery } from "groq";
 
@@ -17,9 +20,7 @@ import { client } from "@/lib/sanity/client";
 
 import type { GetWorkoutsQueryResult } from "@/lib/sanity/types";
 
-import { formatDuration } from "@/helpers/date";
-import { Ionicons } from "@expo/vector-icons";
-import WorkoutCard from "@/app/components/WorkoutCard";
+import { formatDuration } from "@/helpers/history-date";
 
 const getWorkoutsQuery =
   defineQuery(`*[_type == "workout" && userId == $userId] | order(date desc) {
@@ -83,11 +84,6 @@ export default function History() {
   const onRefresh = () => {
     setRefreshing(true);
     fetchWorkouts();
-  };
-
-  const formatWorkoutDuration = (seconds?: number) => {
-    if (!seconds) return "Duration not recorded";
-    return formatDuration(seconds);
   };
 
   if (loading)
