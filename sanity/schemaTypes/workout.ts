@@ -21,7 +21,7 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'durationSeconds',
+      name: 'duration',
       type: 'number',
       title: 'Duration (seconds)',
       description: 'Total duration of the workout in seconds',
