@@ -20,8 +20,6 @@ import { client } from "@/lib/sanity/client";
 
 import type { GetWorkoutsQueryResult } from "@/lib/sanity/types";
 
-import { formatDuration } from "@/helpers/history-date";
-
 const getWorkoutsQuery =
   defineQuery(`*[_type == "workout" && userId == $userId] | order(date desc) {
   _id,
