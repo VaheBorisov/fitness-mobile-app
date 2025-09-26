@@ -18,10 +18,10 @@ import { defineQuery } from "groq";
 
 import { client } from "@/lib/sanity/client";
 
+import { formatDate, formatTime } from "@/helpers/workout-date";
 import { formatDuration } from "@/helpers/history-date";
 
 import type { GetWorkoutRecordQueryResult } from "@/lib/sanity/types";
-import { formatDate, formatTime } from "@/helpers/workout-date";
 
 const getWorkoutRecordQuery =
   defineQuery(`*[_type == "workout" && _id == $workoutId][0] {
