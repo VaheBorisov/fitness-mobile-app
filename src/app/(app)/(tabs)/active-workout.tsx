@@ -1,8 +1,6 @@
-import { useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useFocusEffect, useRouter } from "expo-router";
-
 import { useStopwatch } from "react-timer-hook";
-
 import {
   Platform,
   StatusBar,
@@ -10,11 +8,15 @@ import {
   Text,
   TouchableOpacity,
   Alert,
+  KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 import clsx from "clsx";
 
 import { useWorkoutStore } from "@/store/workout.store";
+import ExerciseSelectionModal from "@/app/components/ExerciseSelectionModal";
 
 export default function ActiveWorkout() {
   const router = useRouter();
@@ -28,6 +30,8 @@ export default function ActiveWorkout() {
   } = useWorkoutStore();
 
   const { minutes, seconds, reset } = useStopwatch({ autoStart: true });
+
+  const [showExerciseSelection, setShowExerciseSelection] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -56,6 +60,8 @@ export default function ActiveWorkout() {
       ],
     );
   };
+
+  const addExercise = () => setShowExerciseSelection(true);
 
   return (
     <View className="flex-1">
@@ -124,6 +130,68 @@ export default function ActiveWorkout() {
           </View>
         </View>
       </View>
+
+      {/* Content Area with a white background */}
+      <View className="flex-1 bg-white">
+        {/* Workout Progress */}
+        <View className="px-6 mt-4">
+          <Text className="text-center text-gray-600 mb-2">
+            {workoutExercises.length} exercises
+          </Text>
+        </View>
+
+        {/* If no exercises, show a message */}
+        {workoutExercises.length === 0 && (
+          <View className="bg-gray-50 rounded-2xl p-8 items-center mx-6">
+            <Ionicons name="barbell-outline" size={48} color="#9CA3AF" />
+            <Text className="text-gray-600 text-lg text-center mt-4 font-medium">
+              No exercises yet
+            </Text>
+            <Text className="text-gray-500 text-center mt-2">
+              Get started by adding your first exercise below
+            </Text>
+          </View>
+        )}
+
+        {/* All exercises - Vertical List */}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          className="flex-1"
+        >
+          <ScrollView className="flex-1 px-6 mt-4">
+            {workoutExercises.map((exercise) => (
+              <View key={exercise.id} className="mb-8">
+                {/* Exercise Header */}
+              </View>
+            ))}
+
+            {/* Add Exercise Button */}
+            <TouchableOpacity
+              onPress={addExercise}
+              className="bg-blue-600 rounded-2xl py-4 items-center mb-8 active:bg-blue-700"
+              activeOpacity={0.8}
+            >
+              <View className="flex-row items-center">
+                <Ionicons
+                  name="add"
+                  size={20}
+                  color="#FFF"
+                  style={{ marginRight: 8 }}
+                />
+                <Text className="text-white font-semibold text-lg">
+                  Add Exercise
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </View>
+
+      {/* Exercise Selection Modal */}
+      <ExerciseSelectionModal
+        visible={showExerciseSelection}
+        onClose={() => setShowExerciseSelection(false)}
+      />
     </View>
   );
 }
