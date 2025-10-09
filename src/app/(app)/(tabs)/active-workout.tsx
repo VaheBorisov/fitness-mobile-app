@@ -17,7 +17,8 @@ import clsx from "clsx";
 
 import ExerciseSelectionModal from "@/app/components/ExerciseSelectionModal";
 
-import { useWorkoutStore } from "@/store/workout.store";
+import { IWorkoutSet, useWorkoutStore } from "@/store/workout.store";
+import exercise from "../../../../sanity/schemaTypes/exercise";
 
 export default function ActiveWorkout() {
   const router = useRouter();
@@ -66,7 +67,23 @@ export default function ActiveWorkout() {
 
   const onDeleteExercise = (exerciseId: string) => () => {};
 
-  const addNewSet = (exerciseId: string) => () => {};
+  const addNewSet = (exerciseId: string) => () => {
+    const newSet: IWorkoutSet = {
+      id: Math.random().toString(),
+      reps: "",
+      weight: "",
+      weightUnit: weightUnit,
+      isCompleted: false,
+    };
+
+    setWorkoutExercises((exercises) =>
+      exercises.map((exercise) =>
+        exercise.id === exerciseId
+          ? { ...exercise, sets: [...exercise.sets, newSet] }
+          : exercise,
+      ),
+    );
+  };
 
   return (
     <View className="flex-1">
