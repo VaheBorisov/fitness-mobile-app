@@ -10,6 +10,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   ScrollView,
+  TextInput,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -18,7 +19,6 @@ import clsx from "clsx";
 import ExerciseSelectionModal from "@/app/components/ExerciseSelectionModal";
 
 import { IWorkoutSet, useWorkoutStore } from "@/store/workout.store";
-import exercise from "../../../../sanity/schemaTypes/exercise";
 
 export default function ActiveWorkout() {
   const router = useRouter();
@@ -65,7 +65,11 @@ export default function ActiveWorkout() {
 
   const addExercise = () => setShowExerciseSelection(true);
 
-  const onDeleteExercise = (exerciseId: string) => () => {};
+  const onDeleteExercise = (exerciseId: string) => () => {
+    setWorkoutExercises((exercises) =>
+      exercises.filter((exercise) => exercise.id !== exerciseId),
+    );
+  };
 
   const addNewSet = (exerciseId: string) => () => {
     const newSet: IWorkoutSet = {
@@ -80,6 +84,61 @@ export default function ActiveWorkout() {
       exercises.map((exercise) =>
         exercise.id === exerciseId
           ? { ...exercise, sets: [...exercise.sets, newSet] }
+          : exercise,
+      ),
+    );
+  };
+
+  const updateSet =
+    (exerciseId: string, setId: string, field: "reps" | "weight") =>
+    (value: string) => {
+      setWorkoutExercises((exercises) =>
+        exercises.map((exercise) =>
+          exercise.id === exerciseId
+            ? {
+                ...exercise,
+                sets: exercise.sets.map((set) =>
+                  set.id === setId
+                    ? {
+                        ...set,
+                        [field]: value,
+                      }
+                    : set,
+                ),
+              }
+            : exercise,
+        ),
+      );
+    };
+
+  const onSetCompletion = (exerciseId: string, setId: string) => () => {
+    setWorkoutExercises((exercises) =>
+      exercises.map((exercise) =>
+        exercise.id === exerciseId
+          ? {
+              ...exercise,
+              sets: exercise.sets.map((set) =>
+                set.id === setId
+                  ? {
+                      ...set,
+                      isCompleted: !set.isCompleted,
+                    }
+                  : set,
+              ),
+            }
+          : exercise,
+      ),
+    );
+  };
+
+  const onDeleteSet = (exerciseId: string, setId: string) => () => {
+    setWorkoutExercises((exercises) =>
+      exercises.map((exercise) =>
+        exercise.id === exerciseId
+          ? {
+              ...exercise,
+              sets: exercise.sets.filter((set) => set.id !== setId),
+            }
           : exercise,
       ),
     );
@@ -236,7 +295,82 @@ export default function ActiveWorkout() {
                         )}
                       >
                         <View className="flex-row items-center justify-between">
-                          <Text className="text-gray-700">Set {index + 1}</Text>
+                          <Text className="text-gray-700">{index + 1}</Text>
+
+                          {/* Reps input */}
+                          <View className="flex-1 mx-2">
+                            <Text className="text-xs text-gray-500 mb-1">
+                              Reps
+                            </Text>
+                            <TextInput
+                              value={set.reps}
+                              onChangeText={updateSet(
+                                exercise.id,
+                                set.id,
+                                "reps",
+                              )}
+                              placeholder="0"
+                              keyboardType="numeric"
+                              className={clsx(
+                                "border rounded-lg px-3 py-2 text-center",
+                                set.isCompleted
+                                  ? "bg-gray-100 border-gray-300 text-gray-500"
+                                  : "bg-white border-gray-300",
+                              )}
+                              editable={!set.isCompleted}
+                            />
+                          </View>
+
+                          {/* Weight input */}
+                          <View className="flex-1 mx-2">
+                            <Text className="text-xs text-gray-500 mb-1">
+                              Weight ({weightUnit})
+                            </Text>
+                            <TextInput
+                              value={set.weight}
+                              onChangeText={updateSet(
+                                exercise.id,
+                                set.id,
+                                "weight",
+                              )}
+                              placeholder="0"
+                              keyboardType="numeric"
+                              className={clsx(
+                                "border rounded-lg px-3 py-2 text-center",
+                                set.isCompleted
+                                  ? "bg-gray-100 border-gray-300 text-gray-500"
+                                  : "bg-white border-gray-300",
+                              )}
+                              editable={!set.isCompleted}
+                            />
+                          </View>
+
+                          {/* Complete Button */}
+                          <TouchableOpacity
+                            className={clsx(
+                              "w-12 h-12 rounded-xl items-center justify-center mx-1",
+                              set.isCompleted ? "bg-green-500" : "bg-gray-200",
+                            )}
+                            onPress={onSetCompletion(exercise.id, set.id)}
+                          >
+                            <Ionicons
+                              name={
+                                set.isCompleted
+                                  ? "checkmark"
+                                  : "checkmark-outline"
+                              }
+                              size={20}
+                              color={set.isCompleted ? "white" : "#9CA3AF"}
+                            />
+                          </TouchableOpacity>
+
+                          {/* Delete Button */}
+                          <TouchableOpacity
+                            onPress={onDeleteSet(exercise.id, set.id)}
+                            className="w-12 h-12 rounded-xl items-center justify-center bg-red-500 ml-1"
+                          >
+                            <Ionicons name="trash" size={16} color="white" />
+                          </TouchableOpacity>
                         </View>
                       </View>
                     ))
