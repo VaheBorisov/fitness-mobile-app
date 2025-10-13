@@ -51,15 +51,6 @@ export default function WorkoutRecord() {
     fetchWorkout();
   }, [workoutId]);
 
-  const totalSets = useMemo(
-    () =>
-      workout?.exercises?.reduce(
-        (total, exercise) => total + (exercise.sets?.length || 0),
-        0,
-      ) || 0,
-    [workout?.exercises],
-  );
-
   const { volume, unit } = useMemo(
     () =>
       workout?.exercises?.reduce(

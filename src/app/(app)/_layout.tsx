@@ -3,7 +3,7 @@ import { Stack } from "expo-router";
 import { View, ActivityIndicator } from "react-native";
 
 export default function Layout() {
-  const { isLoaded, isSignedIn, sessionId, getToken } = useAuth();
+  const { isLoaded, isSignedIn } = useAuth();
 
   if (!isLoaded)
     return (

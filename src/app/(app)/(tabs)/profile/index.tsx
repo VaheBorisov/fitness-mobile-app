@@ -13,6 +13,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
+import clsx from "clsx";
+
 import { client } from "@/lib/sanity/client";
 import { getWorkoutsQuery } from "@/sanity-queries";
 
@@ -20,7 +22,6 @@ import { formatDuration } from "@/helpers/history-date";
 
 import type { GetWorkoutsQueryResult } from "@/lib/sanity/types";
 import { accountSettingsOptions } from "@/constants/account.settings.options";
-import clsx from "clsx";
 
 const formatJoinDate = (date: Date) =>
   date.toLocaleDateString("en-US", {
@@ -94,7 +95,7 @@ export default function Page() {
     );
 
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView edges={["top"]} className="flex-1">
       <ScrollView className="flex-1">
         {/* Header */}
         <View className="px-6 pt-8 pb-6">
@@ -147,7 +148,7 @@ export default function Page() {
                   {workoutsStats.total}
                 </Text>
                 <Text className="text-sm text-gray-600 text-center">
-                  Total Workouts
+                  Total{"\n"}Workouts
                 </Text>
               </View>
               <View className="items-center flex-1">
@@ -155,7 +156,7 @@ export default function Page() {
                   {formatDuration(workoutsStats.duration)}
                 </Text>
                 <Text className="text-sm text-gray-600 text-center">
-                  Total Time
+                  Total{"\n"}Time
                 </Text>
               </View>
               <View className="items-center flex-1">
@@ -163,7 +164,7 @@ export default function Page() {
                   {daysSinceJoining}
                 </Text>
                 <Text className="text-sm text-gray-600 text-center">
-                  Days Active
+                  Days{"\n"}Active
                 </Text>
               </View>
             </View>

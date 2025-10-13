@@ -12,8 +12,9 @@ export default function Workout() {
   };
 
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView edges={["top"]} className="flex-1">
       <StatusBar barStyle="dark-content" />
+
       {/* Main Start Workout Screen */}
       <View className="flex-1 px-6">
         {/*  Header */}

@@ -78,7 +78,7 @@ export default function History() {
     );
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView edges={["top"]} className="flex-1 bg-white">
       <StatusBar barStyle="dark-content" />
 
       {/* Header */}
