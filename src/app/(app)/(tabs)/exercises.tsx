@@ -11,16 +11,12 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { defineQuery } from "groq";
-
 import ExerciseCard from "@/app/components/ExerciseCard";
 
 import { client } from "@/lib/sanity/client";
-import { Exercise } from "@/lib/sanity/types";
+import { exercisesQuery } from "@/sanity-queries";
 
-export const exercisesQuery = defineQuery(`*[_type == "exercise"] {
-  ...
-}`);
+import type { Exercise } from "@/lib/sanity/types";
 
 export default function Exercises() {
   const router = useRouter();

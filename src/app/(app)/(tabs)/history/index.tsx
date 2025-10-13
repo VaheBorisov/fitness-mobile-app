@@ -15,33 +15,10 @@ import { Ionicons } from "@expo/vector-icons";
 
 import WorkoutCard from "@/app/components/WorkoutCard";
 
-import { defineQuery } from "groq";
-
 import { client } from "@/lib/sanity/client";
+import { getWorkoutsQuery } from "@/sanity-queries";
 
 import type { GetWorkoutsQueryResult } from "@/lib/sanity/types";
-
-const getWorkoutsQuery =
-  defineQuery(`*[_type == "workout" && userId == $userId] | order(date desc) {
-  _id,
-  date,
-  duration,
-  exercises[] {
-    exercise-> {
-      _id,
-      name
-    },
-    sets[] {
-      reps,
-      weight,
-      weightUnit,
-      _type,
-      _key,
-    },
-    _type,
-    _key,
-  }
-}`);
 
 export default function History() {
   const { user } = useUser();

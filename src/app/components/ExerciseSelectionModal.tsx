@@ -19,7 +19,7 @@ import ExerciseCard from "@/app/components/ExerciseCard";
 import { useWorkoutStore } from "@/store/workout.store";
 
 import { client } from "@/lib/sanity/client";
-import { exercisesQuery } from "@/app/(app)/(tabs)/exercises";
+import { exercisesQuery } from "@/sanity-queries";
 
 import type { Exercise } from "@/lib/sanity/types";
 

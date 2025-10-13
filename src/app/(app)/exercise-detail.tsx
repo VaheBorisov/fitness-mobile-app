@@ -16,22 +16,16 @@ import { Ionicons } from "@expo/vector-icons";
 
 import clsx from "clsx";
 
-import { defineQuery } from "groq";
+import { client, urlFor } from "@/lib/sanity/client";
+import { singleExerciseQuery } from "@/sanity-queries";
 
+import { markdownStyle } from "@/styles/exersice-detail-markdown-style";
 import {
   getDifficultyColor,
   getDifficultyText,
 } from "@/helpers/exercise-difficulty";
 
-import { client, urlFor } from "@/lib/sanity/client";
-
-import { markdownStyle } from "@/styles/exersice-detail-markdown-style";
-
 import type { Exercise } from "@/lib/sanity/types";
-
-const singleExerciseQuery = defineQuery(
-  `*[_type == "exercise" && _id == $id][0]`,
-);
 
 type TExerciseDetailSearchParams = {
   id: string;

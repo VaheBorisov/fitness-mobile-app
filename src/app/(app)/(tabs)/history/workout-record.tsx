@@ -14,39 +14,13 @@ import { Ionicons } from "@expo/vector-icons";
 
 import WorkoutExerciseCard from "@/app/components/WorkoutExerciseCard";
 
-import { defineQuery } from "groq";
-
 import { client } from "@/lib/sanity/client";
+import { getWorkoutRecordQuery } from "@/sanity-queries";
 
 import { formatDate, formatTime } from "@/helpers/workout-date";
 import { formatDuration } from "@/helpers/history-date";
 
 import type { GetWorkoutRecordQueryResult } from "@/lib/sanity/types";
-
-const getWorkoutRecordQuery =
-  defineQuery(`*[_type == "workout" && _id == $workoutId][0] {
-  _id,
-  _type,
-  _createdAt,
-  date,
-  duration,
-  exercises[] {
-    exercise-> {
-      _id,
-      name,
-      description,
-    },
-    sets[] {
-      reps,
-      weight,
-      weightUnit,
-      _type,
-      _key,
-    },
-    _type,
-    _key,
-  }
-}`);
 
 const initialVolume = { volume: 0, unit: "lbs" };
 

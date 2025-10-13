@@ -1,10 +1,17 @@
+import { useState } from "react";
+import { useAuth } from "@clerk/clerk-expo";
+
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useAuth } from "@clerk/clerk-expo";
+
+import { GetWorkoutsQueryResult } from "@/lib/sanity/types";
 
 export default function Page() {
   const { signOut } = useAuth();
+
+  const [workouts, setWorkouts] = useState<GetWorkoutsQueryResult>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleSignOut = () => {
     Alert.alert("Sign Out", "Are you sure you want to sign out?", [

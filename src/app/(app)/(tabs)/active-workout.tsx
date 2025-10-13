@@ -17,22 +17,16 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { defineQuery } from "groq";
 import clsx from "clsx";
+
+import { useWorkoutStore } from "@/store/workout.store";
 
 import ExerciseSelectionModal from "@/app/components/ExerciseSelectionModal";
 
 import { client } from "@/lib/sanity/client";
-
-import { useWorkoutStore } from "@/store/workout.store";
+import { findExerciseQuery } from "@/sanity-queries";
 
 import type { IWorkoutData, IWorkoutSet } from "@/types";
-
-const findExerciseQuery =
-  defineQuery(`*[_type == 'exercise' && name == $name][0] {
-  _id,
-  name
-}`);
 
 export default function ActiveWorkout() {
   const { user } = useUser();
