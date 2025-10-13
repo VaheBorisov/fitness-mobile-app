@@ -1,6 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useStopwatch } from "react-timer-hook";
+import { useUser } from "@clerk/clerk-expo";
+
 import {
   Platform,
   StatusBar,
@@ -11,16 +13,30 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
+import { defineQuery } from "groq";
 import clsx from "clsx";
 
 import ExerciseSelectionModal from "@/app/components/ExerciseSelectionModal";
 
-import { IWorkoutSet, useWorkoutStore } from "@/store/workout.store";
+import { client } from "@/lib/sanity/client";
+
+import { useWorkoutStore } from "@/store/workout.store";
+
+import type { IWorkoutData, IWorkoutSet } from "@/types";
+
+const findExerciseQuery =
+  defineQuery(`*[_type == 'exercise' && name == $name][0] {
+  _id,
+  name
+}`);
 
 export default function ActiveWorkout() {
+  const { user } = useUser();
+
   const router = useRouter();
   const {
     workoutExercises,
@@ -31,8 +47,11 @@ export default function ActiveWorkout() {
     resetWorkout,
   } = useWorkoutStore();
 
-  const { minutes, seconds, reset } = useStopwatch({ autoStart: true });
+  const { minutes, seconds, totalSeconds, reset } = useStopwatch({
+    autoStart: true,
+  });
 
+  const [isSaving, setIsSaving] = useState(false);
   const [showExerciseSelection, setShowExerciseSelection] = useState(false);
 
   useFocusEffect(
@@ -46,7 +65,105 @@ export default function ActiveWorkout() {
   const getWorkoutDuration = () =>
     `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
-  const cancelWorkout = () => {
+  const saveWorkoutToDatabase = async () => {
+    if (isSaving) return false;
+
+    setIsSaving(true);
+
+    try {
+      const durationInSeconds = totalSeconds;
+
+      const exercisesForSanity = await Promise.all(
+        workoutExercises.map(async (exercise) => {
+          const exerciseDoc = await client.fetch(findExerciseQuery, {
+            name: exercise.name,
+          });
+
+          if (!exerciseDoc) {
+            throw new Error(`Exercise "${exercise.name}" not found.`);
+          }
+
+          const setsForSanity = exercise.sets
+            .filter((set) => set.isCompleted && set.reps && set.weight)
+            .map((set) => ({
+              _type: "set",
+              _key: Math.random().toString(36).substring(2, 11),
+              reps: parseInt(set.reps, 10) || 0,
+              weight: parseFloat(set.weight) || 0,
+              weightUnit: set.weightUnit,
+            }));
+
+          return {
+            _type: "workoutExercise",
+            _key: Math.random().toString(36).substring(2, 11),
+            exercise: {
+              _type: "reference",
+              _ref: exerciseDoc._id,
+            },
+            sets: setsForSanity,
+          };
+        }),
+      );
+
+      const validExercises = exercisesForSanity.filter(
+        (exercise) => exercise.sets.length,
+      );
+
+      if (!validExercises.length) {
+        Alert.alert(
+          "No Completed Sets",
+          "Please complete at least one set before saving the workout.",
+        );
+        return false;
+      }
+
+      const workoutData: IWorkoutData = {
+        _type: "workout",
+        userId: user.id,
+        date: new Date().toISOString(),
+        duration: durationInSeconds,
+        exercises: validExercises,
+      };
+
+      const result = await fetch("/api/save-workout", {
+        method: "POST",
+        body: JSON.stringify({ workoutData }),
+      });
+
+      console.log("Workout saved successfully", result);
+      return true;
+    } catch (e) {
+      console.error("Error saving workout", e);
+      Alert.alert("Save Failed", "Failed to save workout. Please try again.");
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const completeWorkout = async () => {
+    const saved = await saveWorkoutToDatabase();
+
+    if (saved) {
+      Alert.alert("Workout Saved", "Your workout has been saved successfully!");
+
+      resetWorkout();
+      router.replace("/(app)/(tabs)/history?refresh=true");
+    }
+  };
+
+  const onSaveWorkout = () => {
+    Alert.alert(
+      "Complete Workout",
+      "Are you sure want to complete the workout?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Complete", onPress: async () => await completeWorkout() },
+      ],
+    );
+  };
+
+  const onCancelWorkout = () => {
     Alert.alert(
       "Cancel Workout",
       "Are you sure you want to cancel the workout?",
@@ -144,6 +261,16 @@ export default function ActiveWorkout() {
     );
   };
 
+  const disabledSaveButton = useMemo(
+    () =>
+      isSaving ||
+      !workoutExercises.length ||
+      workoutExercises.some((exercise) =>
+        exercise.sets.some((set) => !set.isCompleted),
+      ),
+    [isSaving, workoutExercises],
+  );
+
   return (
     <View className="flex-1">
       <StatusBar barStyle="light-content" backgroundColor="#1F2937" />
@@ -203,7 +330,7 @@ export default function ActiveWorkout() {
             </View>
 
             <TouchableOpacity
-              onPress={cancelWorkout}
+              onPress={onCancelWorkout}
               className="bg-red-600 px-4 py-2 rounded-lg"
             >
               <Text className="text-white font-medium">End Workout</Text>
@@ -412,6 +539,31 @@ export default function ActiveWorkout() {
                   Add Exercise
                 </Text>
               </View>
+            </TouchableOpacity>
+
+            {/* Complete Workout Button */}
+            <TouchableOpacity
+              onPress={onSaveWorkout}
+              className={clsx(
+                "rounded-2xl py-4 items-center mb-8",
+                disabledSaveButton
+                  ? "bg-gray-400"
+                  : "bg-green-600 active:bg-green-700",
+              )}
+              disabled={disabledSaveButton}
+            >
+              {isSaving ? (
+                <View className="flex-row items-center">
+                  <ActivityIndicator size="small" color="white" />
+                  <Text className="text-white font-semibold text-lg ml-2">
+                    Saving...
+                  </Text>
+                </View>
+              ) : (
+                <Text className="text-white font-semibold text-lg">
+                  Complete Workout
+                </Text>
+              )}
             </TouchableOpacity>
           </ScrollView>
         </KeyboardAvoidingView>

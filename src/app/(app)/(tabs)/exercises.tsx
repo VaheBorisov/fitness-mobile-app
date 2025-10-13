@@ -19,7 +19,7 @@ import { client } from "@/lib/sanity/client";
 import { Exercise } from "@/lib/sanity/types";
 
 export const exercisesQuery = defineQuery(`*[_type == "exercise"] {
-    ...
+  ...
 }`);
 
 export default function Exercises() {
@@ -58,7 +58,7 @@ export default function Exercises() {
   };
 
   return (
-    <SafeAreaView className="flex flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
       <View className="px-6 py-4 bg-white border-b border-gray-200">
         <Text className="text-2xl font-bold text-gray-900">
